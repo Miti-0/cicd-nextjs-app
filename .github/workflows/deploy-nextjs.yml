@@ -26,19 +26,3 @@ jobs:
 
       - name: Build application
         run: npm run build
-
-      - name: Deploy via SSH and reload PM2
-        uses: appleboy/ssh-action@v1.1.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            set -e
-            export PATH=$PATH:/usr/local/bin:~/.nvm/versions/node/$(ls ~/.nvm/versions/node 2>/dev/null | tail -n 1)/bin
-            cd ~/cicd-nextjs-app
-            git pull origin main
-            npm ci
-            npm run build
-            pm2 reload nextjs-app || pm2 start npm --name "nextjs-app" -- start
-            pm2 save
